@@ -1,0 +1,21 @@
+name: Build Orbital Reverb
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
+      - name: Build
+        run: cmake --build build --config Release --parallel 4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: OrbitalReverb-${{ matrix.os }}
+          path: |
+            build/OrbitalReverb_artefacts/Release/VST3
+            build/OrbitalReverb_artefacts/Release/AU
